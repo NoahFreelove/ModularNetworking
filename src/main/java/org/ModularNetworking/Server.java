@@ -46,6 +46,7 @@ public abstract class Server {
                         System.out.println("New Client: " + newClient.connectedSocket.getInetAddress().getHostAddress());
 
                         clients.add(newClient);
+                        onConnectSendServerInfo(newClient);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -59,6 +60,8 @@ public abstract class Server {
             System.out.println("Error: " + e);
         }
     }
+
+    protected abstract void onConnectSendServerInfo(Client connectedClient);
 
     private void serverInput() {
         while (true){

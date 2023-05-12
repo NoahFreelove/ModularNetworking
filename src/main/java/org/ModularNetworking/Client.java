@@ -2,7 +2,10 @@ package org.ModularNetworking;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ConnectException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class Client {
@@ -17,6 +20,19 @@ public class Client {
 
 
     public Client(Socket socket){
+        setup(socket);
+    }
+    public Client(String ip, int port){
+        try{
+            setup(new Socket(ip,port));
+        }catch (ConnectException | UnknownHostException e){
+            onDisconnect(DisconnectType.SERVER_DOESNT_EXIST);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void setup(Socket socket){
         try {
             this.connectedSocket = socket;
             connected = true;
@@ -42,7 +58,14 @@ public class Client {
 
             } catch (Exception e) {
                 if(connected){
-                    System.out.println("Read Error: " + e);
+                    if(isServerProp){
+                        System.out.println("Client ID " + ID + " Disconnected.");
+                    }
+                    else
+                        onDisconnect(DisconnectType.LOST_CONNECTION_WITH_SERVER);
+                }
+                else{
+                    System.out.println("Read error: " + e.getMessage());
                 }
                 break;
             }
@@ -104,4 +127,5 @@ public class Client {
     }
 
     protected void readFromServer(String input){}
+    protected void onDisconnect(DisconnectType dt){}
 }

@@ -10,6 +10,11 @@ public class ExtendedServer extends Server {
     }
 
     @Override
+    protected void onConnectSendServerInfo(Client connectedClient) {
+        connectedClient.send("ID:" + connectedClient.ID);
+    }
+
+    @Override
     protected void onServerInput(String consoleInput) {
         serverSendToAll(consoleInput);
     }
