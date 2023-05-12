@@ -122,7 +122,8 @@ public class Client {
             connectedServer.readFromClient(input, this);
             return;
         }
-        if(serverKey == ""){
+        System.out.println(input + " : KEY-> " + serverKey);
+        if(serverKey.equals("")){
             if(input.startsWith("KEY:"))
             {
                 serverKey = input.replace("KEY:","");
@@ -130,6 +131,8 @@ public class Client {
             return;
         }
         if(input.startsWith(serverKey)){
+
+            System.out.println("valid");
 
             if(input.startsWith(serverKey +  "ID:")){
                 ID = Integer.parseInt(input.replace("ID:",""));

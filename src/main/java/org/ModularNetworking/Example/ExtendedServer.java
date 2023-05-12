@@ -4,6 +4,8 @@ import org.ModularNetworking.Client;
 import org.ModularNetworking.Server;
 import org.ModularNetworking.ServerConfig;
 
+import java.util.Random;
+
 public class ExtendedServer extends Server {
     public ExtendedServer(ServerConfig config) {
         super(config);
@@ -11,7 +13,7 @@ public class ExtendedServer extends Server {
 
     @Override
     protected void onConnectSendServerInfo(Client connectedClient) {
-        serverSendTo(connectedClient, "KEY:" + connectedClient.serverKey);
+        connectedClient.send("KEY:" + connectedClient.serverKey);
         serverSendTo(connectedClient, "ID:" + connectedClient.ID);
     }
 
