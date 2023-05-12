@@ -11,7 +11,8 @@ public class ExtendedServer extends Server {
 
     @Override
     protected void onConnectSendServerInfo(Client connectedClient) {
-        connectedClient.send("ID:" + connectedClient.ID);
+        serverSendTo(connectedClient, "KEY:" + connectedClient.serverKey);
+        serverSendTo(connectedClient, "ID:" + connectedClient.ID);
     }
 
     @Override
@@ -22,5 +23,18 @@ public class ExtendedServer extends Server {
     @Override
     public void readFromClient(String input, Client client) {
         System.out.println("FROM CLIENT: " + client.ID + " : " + input);
+    }
+
+    @Override
+    protected String generateClientKey()
+    {
+        String symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=";
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < 10; i++) {
+            int index = random.nextInt(symbols.length());
+            sb.append(symbols.charAt(index));
+        }
+        return sb.toString();
     }
 }

@@ -11,14 +11,8 @@ public class ExtendedClient extends Client {
     }
 
     @Override
-    protected void readFromServer(String input) {
-        if(input.startsWith("ID:")){
-            ID = Integer.parseInt(input.replace("ID:",""));
-            System.out.println("My ID is now " + ID);
-        }
-        else{
-            System.out.println("From server: " + input);
-        }
+    protected void readFromServer(String input) {    
+        System.out.println("From server: " + input);
     }
     @Override
     protected void onDisconnect(DisconnectType dt){

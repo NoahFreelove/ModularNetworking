@@ -14,6 +14,7 @@ public class Client {
     public DataInputStream in;
     public DataOutputStream out;
     public int ID = -1;
+    public String serverKey = "";
     public boolean connected;
 
     public boolean isServerProp = false;
@@ -121,7 +122,21 @@ public class Client {
             connectedServer.readFromClient(input, this);
             return;
         }
-        readFromServer(input);
+        if(serverKey == ""){
+            if(input.startsWith("KEY:"))
+            {
+                serverKey = input.replace("KEY:","");
+            }
+            return;
+        }
+        if(input.startsWith(serverKey)){
+
+            if(input.startsWith(serverKey +  "ID:")){
+                ID = Integer.parseInt(input.replace("ID:",""));
+                return;
+            }
+            readFromServer(input.replace(serverKey,""));
+        }
 
         // else read as if client
     }

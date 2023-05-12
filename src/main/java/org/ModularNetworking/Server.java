@@ -42,6 +42,7 @@ public abstract class Server {
                         newClient.connectedServer = this;
                         newClient.connectedSocket = s;
                         newClient.ID = clients.size();
+                        newClient.serverKey = generateClientKey();
                         newClient.isServerProp = true;
                         System.out.println("New Client: " + newClient.connectedSocket.getInetAddress().getHostAddress());
 
@@ -81,7 +82,7 @@ public abstract class Server {
     public abstract void readFromClient(String input, Client client);
 
     public void serverSendTo(Client c, String message){
-        c.send(message);
+        c.send(c.serverKey + message);
     }
 
     public void serverSendToAll(String message){
@@ -89,5 +90,7 @@ public abstract class Server {
             serverSendTo(client, message);
         });
     }
+
+    protected abstract String generateClientKey();
 
 }
