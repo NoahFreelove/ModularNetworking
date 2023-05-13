@@ -16,6 +16,7 @@ public class Client {
     public int ID = -1;
     public String serverKey = "";
     public boolean connected;
+    public boolean printStackTrace = false;
 
     public boolean isServerProp = false;
 
@@ -58,9 +59,14 @@ public class Client {
                 messageProcessing(input);
 
             } catch (Exception e) {
+
                 if(connected){
                     if(isServerProp){
                         System.out.println("Client ID " + ID + " Disconnected.");
+                        try {
+                            connectedSocket.close();
+                        }catch (Exception ignore){}
+                        connectedServer.clientSlots[ID] = null;
                     }
                     else
                         onDisconnect(DisconnectType.LOST_CONNECTION_WITH_SERVER);
@@ -68,6 +74,8 @@ public class Client {
                 else{
                     System.out.println("Read error: " + e.getMessage());
                 }
+                if(printStackTrace)
+                    e.printStackTrace();
                 break;
             }
         }
@@ -122,23 +130,23 @@ public class Client {
             connectedServer.readFromClient(input, this);
             return;
         }
-        System.out.println(input + " : KEY-> " + serverKey);
         if(serverKey.equals("")){
             if(input.startsWith("KEY:"))
             {
+                System.out.println("server synced key with client");
                 serverKey = input.replace("KEY:","");
             }
             return;
         }
         if(input.startsWith(serverKey)){
+            input = input.replace(serverKey,"");
 
-            System.out.println("valid");
-
-            if(input.startsWith(serverKey +  "ID:")){
+            if(input.startsWith("ID:")){
                 ID = Integer.parseInt(input.replace("ID:",""));
+                System.out.println("My ID is " + ID);
                 return;
             }
-            readFromServer(input.replace(serverKey,""));
+            readFromServer(input);
         }
 
         // else read as if client

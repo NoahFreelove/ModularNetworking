@@ -16,7 +16,7 @@ public abstract class Server {
     }
 
     ServerSocket serverSocket;
-    volatile CopyOnWriteArrayList<Client> clients = new CopyOnWriteArrayList<>();
+    volatile public Client[] clientSlots = new Client[4];
 
     public void open() {
         try {
@@ -41,12 +41,23 @@ public abstract class Server {
 
                         newClient.connectedServer = this;
                         newClient.connectedSocket = s;
-                        newClient.ID = clients.size();
+                        int i = 0;
+                        for (Client c : clientSlots) {
+                            if(c == null)
+                            {
+                                clientSlots[i] = newClient;
+                                break;
+                            }
+                            if(i == clientSlots.length-1){
+                                newClient.connectedSocket.close();
+                                System.out.println("rejected new connection as server is full.");
+                            }
+                            i++;
+                        }
+                        newClient.ID = i;
                         newClient.serverKey = generateClientKey();
                         newClient.isServerProp = true;
                         System.out.println("New Client: " + newClient.connectedSocket.getInetAddress().getHostAddress());
-
-                        clients.add(newClient);
                         onConnectSendServerInfo(newClient);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -86,9 +97,10 @@ public abstract class Server {
     }
 
     public void serverSendToAll(String message){
-        clients.forEach(client -> {
-            serverSendTo(client, message);
-        });
+        for (Client c : clientSlots) {
+            if(c != null)
+                serverSendTo(c, message);
+        }
     }
 
     protected abstract String generateClientKey();
